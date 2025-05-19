@@ -51,7 +51,7 @@ public final class SlotChainProvider {
             RecordLog.info("[SlotChainProvider] Global slot chain builder resolved: {}",
                 slotChainBuilder.getClass().getCanonicalName());
         }
-        return slotChainBuilder.build();
+        return slotChainBuilder.build();/* ## 构建限流降级处理链 */
     }
 
     private SlotChainProvider() {}

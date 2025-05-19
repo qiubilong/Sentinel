@@ -33,14 +33,14 @@ import java.lang.reflect.Method;
  * @author Eric Zhao
  */
 @Aspect
-public class SentinelResourceAspect extends AbstractSentinelAspectSupport {
+public class SentinelResourceAspect extends AbstractSentinelAspectSupport {  /* ## 流量治理 - 切面拦截器 */
 
     @Pointcut("@annotation(com.alibaba.csp.sentinel.annotation.SentinelResource)")
     public void sentinelResourceAnnotationPointcut() {
     }
 
     @Around("sentinelResourceAnnotationPointcut()")
-    public Object invokeResourceWithSentinel(ProceedingJoinPoint pjp) throws Throwable {
+    public Object invokeResourceWithSentinel(ProceedingJoinPoint pjp) throws Throwable { /* 切面逻辑 - Advice */
         Method originMethod = resolveMethod(pjp);
 
         SentinelResource annotation = originMethod.getAnnotation(SentinelResource.class);
@@ -48,12 +48,12 @@ public class SentinelResourceAspect extends AbstractSentinelAspectSupport {
             // Should not go through here.
             throw new IllegalStateException("Wrong state for SentinelResource annotation");
         }
-        String resourceName = getResourceName(annotation.value(), originMethod);
+        String resourceName = getResourceName(annotation.value(), originMethod);//资源名
         EntryType entryType = annotation.entryType();
         int resourceType = annotation.resourceType();
         Entry entry = null;
         try {
-            entry = SphU.entry(resourceName, resourceType, entryType, pjp.getArgs());
+            entry = SphU.entry(resourceName, resourceType, entryType, pjp.getArgs());/* 限流降级入口 */
             return pjp.proceed();
         } catch (BlockException ex) {
             return handleBlockException(pjp, annotation, ex);

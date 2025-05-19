@@ -133,9 +133,9 @@ public class CtSph implements Sph {
             return new CtEntry(resourceWrapper, null, context);
         }
 
-        ProcessorSlot<Object> chain = lookProcessChain(resourceWrapper);
+        ProcessorSlot<Object> chain = lookProcessChain(resourceWrapper); /* ## 构建限流降级处理链 --> Spi加载 --> AuthoritySlot - SystemSlot- FlowSlot - DegradeSlot   */
 
-        /*
+        /**
          * Means amount of resources (slot chain) exceeds {@link Constants.MAX_SLOT_CHAIN_SIZE},
          * so no rule checking will be done.
          */
@@ -202,7 +202,7 @@ public class CtSph implements Sph {
                         return null;
                     }
 
-                    chain = SlotChainProvider.newSlotChain();
+                    chain = SlotChainProvider.newSlotChain();/* ## 构建限流降级处理链 */
                     Map<ResourceWrapper, ProcessorSlotChain> newMap = new HashMap<ResourceWrapper, ProcessorSlotChain>(
                         chainMap.size() + 1);
                     newMap.putAll(chainMap);
@@ -337,14 +337,14 @@ public class CtSph implements Sph {
     @Override
     public Entry entryWithType(String name, int resourceType, EntryType entryType, int count, Object[] args)
         throws BlockException {
-        return entryWithType(name, resourceType, entryType, count, false, args);
+        return entryWithType(name, resourceType, entryType, count, false, args);/* 限流降级入口 */
     }
 
     @Override
     public Entry entryWithType(String name, int resourceType, EntryType entryType, int count, boolean prioritized,
                                Object[] args) throws BlockException {
         StringResourceWrapper resource = new StringResourceWrapper(name, entryType, resourceType);
-        return entryWithPriority(resource, count, prioritized, args);
+        return entryWithPriority(resource, count, prioritized, args);/* 限流降级入口 */
     }
 
     @Override
