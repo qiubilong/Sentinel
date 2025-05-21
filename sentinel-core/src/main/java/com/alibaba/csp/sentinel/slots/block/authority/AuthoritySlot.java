@@ -37,7 +37,7 @@ public class AuthoritySlot extends AbstractLinkedProcessorSlot<DefaultNode> {
     @Override
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count, boolean prioritized, Object... args)
         throws Throwable {
-        checkBlackWhiteAuthority(resourceWrapper, context);
+        checkBlackWhiteAuthority(resourceWrapper, context);/* 校验白名单 */
         fireEntry(context, resourceWrapper, node, count, prioritized, args);
     }
 
@@ -54,7 +54,7 @@ public class AuthoritySlot extends AbstractLinkedProcessorSlot<DefaultNode> {
         }
 
         for (AuthorityRule rule : rules) {
-            if (!AuthorityRuleChecker.passCheck(rule, context)) {
+            if (!AuthorityRuleChecker.passCheck(rule, context)) { /* 校验白名单规则 */
                 throw new AuthorityException(context.getOrigin(), rule);
             }
         }

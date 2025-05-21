@@ -67,12 +67,12 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
     @Override
     public boolean tryPass(Context context) {
         // Template implementation.
-        if (currentState.get() == State.CLOSED) {
+        if (currentState.get() == State.CLOSED) { /* 通路状态 */
             return true;
         }
         if (currentState.get() == State.OPEN) {
             // For half-open state we allow a request for probing.
-            return retryTimeoutArrived() && fromOpenToHalfOpen(context);
+            return retryTimeoutArrived() && fromOpenToHalfOpen(context);/* 断路状态 & 熔断到时 -->  半开状态，通过一次请求  */
         }
         return false;
     }
@@ -93,7 +93,7 @@ public abstract class AbstractCircuitBreaker implements CircuitBreaker {
     protected boolean fromCloseToOpen(double snapshotValue) {
         State prev = State.CLOSED;
         if (currentState.compareAndSet(prev, State.OPEN)) {
-            updateNextRetryTimestamp();
+            updateNextRetryTimestamp(); /* 设置熔断到期时间 */
 
             notifyObservers(prev, State.OPEN, snapshotValue);
             return true;

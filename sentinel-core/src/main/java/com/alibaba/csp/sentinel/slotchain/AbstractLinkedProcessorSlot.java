@@ -29,7 +29,7 @@ public abstract class AbstractLinkedProcessorSlot<T> implements ProcessorSlot<T>
     public void fireEntry(Context context, ResourceWrapper resourceWrapper, Object obj, int count, boolean prioritized, Object... args)
         throws Throwable {
         if (next != null) {
-            next.transformEntry(context, resourceWrapper, obj, count, prioritized, args);
+            next.transformEntry(context, resourceWrapper, obj, count, prioritized, args); /* ## 调用责任链下一个处理器 */
         }
     }
 
@@ -37,7 +37,7 @@ public abstract class AbstractLinkedProcessorSlot<T> implements ProcessorSlot<T>
     void transformEntry(Context context, ResourceWrapper resourceWrapper, Object o, int count, boolean prioritized, Object... args)
         throws Throwable {
         T t = (T)o;
-        entry(context, resourceWrapper, t, count, prioritized, args);
+        entry(context, resourceWrapper, t, count, prioritized, args);/* ## 调用责任链下一个处理器 */
     }
 
     @Override

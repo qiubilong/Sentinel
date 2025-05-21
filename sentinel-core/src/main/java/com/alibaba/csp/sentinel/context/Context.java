@@ -74,7 +74,7 @@ public class Context {
     /**
      * The origin of this context (usually indicate different invokers, e.g. service consumer name or origin IP).
      */
-    private String origin = "";
+    private String origin = ""; /* 请求来源 */
 
     private final boolean async;
 

@@ -145,7 +145,7 @@ public class CtSph implements Sph {
 
         Entry e = new CtEntry(resourceWrapper, chain, context, count, args);
         try {
-            chain.entry(context, resourceWrapper, null, count, prioritized, args);
+            chain.entry(context, resourceWrapper, null, count, prioritized, args);/* ## 按顺序执行责任链处理器 */
         } catch (BlockException e1) {
             e.exit(count, args);
             throw e1;

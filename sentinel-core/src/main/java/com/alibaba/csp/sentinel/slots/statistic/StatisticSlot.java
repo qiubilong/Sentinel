@@ -49,7 +49,7 @@ import com.alibaba.csp.sentinel.slots.block.BlockException;
  * @author Eric Zhao
  */
 @Spi(order = Constants.ORDER_STATISTIC_SLOT)
-public class StatisticSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
+public class StatisticSlot extends AbstractLinkedProcessorSlot<DefaultNode> { /* 流量统计 */
 
     @Override
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count,
@@ -59,7 +59,7 @@ public class StatisticSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
             fireEntry(context, resourceWrapper, node, count, prioritized, args);
 
             // Request passed, add thread count and pass count.
-            node.increaseThreadNum();
+            node.increaseThreadNum();/* 调用资源成功后，增加线程数和qps */
             node.addPassRequest(count);
 
             if (context.getCurEntry().getOriginNode() != null) {

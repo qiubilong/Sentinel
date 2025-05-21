@@ -35,7 +35,7 @@ import com.alibaba.csp.sentinel.spi.Spi;
  * @author Eric Zhao
  */
 @Spi(order = Constants.ORDER_DEGRADE_SLOT)
-public class DegradeSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
+public class DegradeSlot extends AbstractLinkedProcessorSlot<DefaultNode> { /* 熔断降级 */
 
     @Override
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count,
@@ -73,7 +73,7 @@ public class DegradeSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
         if (curEntry.getBlockError() == null) {
             // passed request
             for (CircuitBreaker circuitBreaker : circuitBreakers) {
-                circuitBreaker.onRequestComplete(context);
+                circuitBreaker.onRequestComplete(context); /* 统计请求结果 */
             }
         }
 

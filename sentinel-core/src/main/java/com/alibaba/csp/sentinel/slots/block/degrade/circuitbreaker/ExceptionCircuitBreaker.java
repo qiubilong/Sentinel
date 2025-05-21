@@ -74,7 +74,7 @@ public class ExceptionCircuitBreaker extends AbstractCircuitBreaker {
         }
         counter.getTotalCount().add(1);
 
-        handleStateChangeWhenThresholdExceeded(error);
+        handleStateChangeWhenThresholdExceeded(error); /* ## 尝试恢复通路 */
     }
 
     private void handleStateChangeWhenThresholdExceeded(Throwable error) {
@@ -85,9 +85,9 @@ public class ExceptionCircuitBreaker extends AbstractCircuitBreaker {
         if (currentState.get() == State.HALF_OPEN) {
             // In detecting request
             if (error == null) {
-                fromHalfOpenToClose();
+                fromHalfOpenToClose();                 /* 尝试一次请求正常，恢复通路   */
             } else {
-                fromHalfOpenToOpen(1.0d);
+                fromHalfOpenToOpen(1.0d); /* 尝试一次请求异常，通路半开 -> 继续断开   */
             }
             return;
         }
