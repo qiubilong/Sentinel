@@ -30,7 +30,7 @@ import org.springframework.web.servlet.HandlerMapping;
  *
  * @author kaizi2009
  * @since 1.7.1
- */
+ */     /* Sentinel 限流 web拦截器 */
 public class SentinelWebInterceptor extends AbstractSentinelInterceptor {
 
     private final SentinelWebMvcConfig config;
