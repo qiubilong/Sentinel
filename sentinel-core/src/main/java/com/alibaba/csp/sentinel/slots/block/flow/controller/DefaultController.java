@@ -49,7 +49,7 @@ public class DefaultController implements TrafficShapingController {
     public boolean canPass(Node node, int acquireCount, boolean prioritized) {
         int curCount = avgUsedTokens(node);
         if (curCount + acquireCount > count) {
-            if (prioritized && grade == RuleConstant.FLOW_GRADE_QPS) {
+            if (prioritized && grade == RuleConstant.FLOW_GRADE_QPS) { /* qps */
                 long currentTime;
                 long waitInMs;
                 currentTime = TimeUtil.currentTimeMillis();

@@ -111,7 +111,7 @@ public class WarmUpController implements TrafficShapingController {
     }
 
     @Override
-    public boolean canPass(Node node, int acquireCount, boolean prioritized) {
+    public boolean canPass(Node node, int acquireCount, boolean prioritized) { /* 令牌 */
         long passQps = (long) node.passQps();
 
         long previousQps = (long) node.previousPassQps();
