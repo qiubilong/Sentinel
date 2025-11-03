@@ -106,12 +106,12 @@ public abstract class AbstractSentinelInterceptor implements AsyncHandlerInterce
             String origin = parseOrigin(request);
             String contextName = getContextName(request);
             ContextUtil.enter(contextName, origin);
-            Entry entry = SphU.entry(resourceName, ResourceTypeConstants.COMMON_WEB, EntryType.IN);
+            Entry entry = SphU.entry(resourceName, ResourceTypeConstants.COMMON_WEB, EntryType.IN); /* 限流计算入口 */
             request.setAttribute(baseWebMvcConfig.getRequestAttributeName(), entry);
             return true;
         } catch (BlockException e) {
             try {
-                handleBlockException(request, response, e);
+                handleBlockException(request, response, e); /* 限流处理 */
             } finally {
                 ContextUtil.exit();
             }
@@ -215,7 +215,7 @@ public abstract class AbstractSentinelInterceptor implements AsyncHandlerInterce
 
     protected void handleBlockException(HttpServletRequest request, HttpServletResponse response, BlockException e)
             throws Exception {
-        if (baseWebMvcConfig.getBlockExceptionHandler() != null) {
+        if (baseWebMvcConfig.getBlockExceptionHandler() != null) { /* 程序员不指定，默认走 DefaultBlockExceptionHandler */
             baseWebMvcConfig.getBlockExceptionHandler().handle(request, response, e);
         } else {
             // Throw BlockException directly. Users need to handle it in Spring global exception handler.
