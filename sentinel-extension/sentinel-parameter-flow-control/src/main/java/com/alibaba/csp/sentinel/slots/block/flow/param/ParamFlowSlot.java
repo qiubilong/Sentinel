@@ -42,7 +42,7 @@ public class ParamFlowSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
             return;
         }
 
-        checkFlow(resourceWrapper, count, args);
+        checkFlow(resourceWrapper, count, args);/* 热点参数限流 */
         fireEntry(context, resourceWrapper, node, count, prioritized, args);
     }
 
@@ -78,7 +78,7 @@ public class ParamFlowSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
             // Initialize the parameter metrics.
             ParameterMetricStorage.initParamMetricsFor(resourceWrapper, rule);
 
-            if (!ParamFlowChecker.passCheck(resourceWrapper, rule, count, args)) {
+            if (!ParamFlowChecker.passCheck(resourceWrapper, rule, count, args)) {/* 热点参数限流 */
                 String triggeredParam = "";
                 if (args.length > rule.getParamIdx()) {
                     Object value = args[rule.getParamIdx()];

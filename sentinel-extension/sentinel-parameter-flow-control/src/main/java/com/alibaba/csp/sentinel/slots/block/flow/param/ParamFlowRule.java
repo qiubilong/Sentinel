@@ -31,7 +31,7 @@ import com.alibaba.csp.sentinel.slots.block.RuleConstant;
  * @author Eric Zhao
  * @since 0.2.0
  */
-public class ParamFlowRule extends AbstractRule {
+public class ParamFlowRule extends AbstractRule {/* 热点参数限流 */
 
     public ParamFlowRule() {}
 
@@ -47,12 +47,12 @@ public class ParamFlowRule extends AbstractRule {
     /**
      * Parameter index.
      */
-    private Integer paramIdx;
+    private Integer paramIdx; /* 参数坐标 */
 
     /**
      * The threshold count.
      */
-    private double count;
+    private double count; /* 每秒阈值 */
 
     /**
      * Traffic shaping behavior (since 1.6.0).

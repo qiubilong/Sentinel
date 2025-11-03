@@ -54,7 +54,7 @@ public final class ParamFlowChecker {
         }
 
         // Get parameter value.
-        Object value = args[paramIdx];
+        Object value = args[paramIdx]; /* 参数值 */
 
         // Assign value with the result of paramFlowKey method
         if (value instanceof ParamFlowArgument) {
@@ -69,7 +69,7 @@ public final class ParamFlowChecker {
             return passClusterCheck(resourceWrapper, rule, count, value);
         }
 
-        return passLocalCheck(resourceWrapper, rule, count, value);
+        return passLocalCheck(resourceWrapper, rule, count, value);/* 热点参数限流 */
     }
 
     private static boolean passLocalCheck(ResourceWrapper resourceWrapper, ParamFlowRule rule, int count,
@@ -90,7 +90,7 @@ public final class ParamFlowChecker {
                     }
                 }
             } else {
-                return passSingleValueCheck(resourceWrapper, rule, count, value);
+                return passSingleValueCheck(resourceWrapper, rule, count, value);/* 热点参数限流 */
             }
         } catch (Throwable e) {
             RecordLog.warn("[ParamFlowChecker] Unexpected error", e);
@@ -101,11 +101,11 @@ public final class ParamFlowChecker {
 
     static boolean passSingleValueCheck(ResourceWrapper resourceWrapper, ParamFlowRule rule, int acquireCount,
                                         Object value) {
-        if (rule.getGrade() == RuleConstant.FLOW_GRADE_QPS) {
+        if (rule.getGrade() == RuleConstant.FLOW_GRADE_QPS) {/* qps */
             if (rule.getControlBehavior() == RuleConstant.CONTROL_BEHAVIOR_RATE_LIMITER) {
                 return passThrottleLocalCheck(resourceWrapper, rule, acquireCount, value);
             } else {
-                return passDefaultLocalCheck(resourceWrapper, rule, acquireCount, value);
+                return passDefaultLocalCheck(resourceWrapper, rule, acquireCount, value);/* 热点参数限流 */
             }
         } else if (rule.getGrade() == RuleConstant.FLOW_GRADE_THREAD) {
             Set<Object> exclusionItems = rule.getParsedHotItems().keySet();
@@ -147,9 +147,9 @@ public final class ParamFlowChecker {
             return false;
         }
 
-        while (true) {
+        while (true) {//令牌桶算法
             long currentTime = TimeUtil.currentTimeMillis();
-
+             /* 参数 - 令牌桶 */
             AtomicReference<TokenUpdateStatus> atomicLastStatus = tokenCounters.putIfAbsent(value, new AtomicReference<>(
                     new TokenUpdateStatus(currentTime, maxCount - acquireCount)
             ));
@@ -163,9 +163,9 @@ public final class ParamFlowChecker {
             long passTime = currentTime - lastStatus.getLastAddTokenTime();
             // A simplified token bucket algorithm that will replenish the tokens only when statistic window has passed.
             long newQps;
-            if (passTime > rule.getDurationInSec() * 1000) {
+            if (passTime > rule.getDurationInSec() * 1000) {/* 补充令牌 */
                 long restQps = lastStatus.getRestQps();
-                long toAddCount = (passTime * tokenCount) / (rule.getDurationInSec() * 1000);
+                long toAddCount = (passTime * tokenCount) / (rule.getDurationInSec() * 1000); /* 补充令牌 */
                 newQps = toAddCount + restQps > maxCount ? (maxCount - acquireCount)
                         : (restQps + toAddCount - acquireCount);
 
@@ -178,7 +178,7 @@ public final class ParamFlowChecker {
                 }
                 Thread.yield();
             } else {
-                newQps = lastStatus.getRestQps() - acquireCount;
+                newQps = lastStatus.getRestQps() - acquireCount;/* 扣减令牌 */
                 if (newQps >= 0) {
                     TokenUpdateStatus newStatus = new TokenUpdateStatus(lastStatus.getLastAddTokenTime(), newQps);
                     if (atomicLastStatus.compareAndSet(lastStatus, newStatus)) {

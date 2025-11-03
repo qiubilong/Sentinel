@@ -1,6 +1,6 @@
 package com.alibaba.csp.sentinel.slots.block.flow.param;
 
-class TokenUpdateStatus {
+class TokenUpdateStatus { /* 令牌桶 */
 
     private final long lastAddTokenTime;
 

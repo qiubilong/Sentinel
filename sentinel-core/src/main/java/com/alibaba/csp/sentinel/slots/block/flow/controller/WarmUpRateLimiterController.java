@@ -65,7 +65,7 @@ public class WarmUpRateLimiterController extends WarmUpController {
             return true;
         } else {
             long waitTime = costTime + latestPassedTime.get() - currentTime;
-            if (waitTime > timeoutInMs) {
+            if (waitTime > timeoutInMs) { /* 排队等待超时 */
                 return false;
             } else {
                 long oldTime = latestPassedTime.addAndGet(costTime);
@@ -76,7 +76,7 @@ public class WarmUpRateLimiterController extends WarmUpController {
                         return false;
                     }
                     if (waitTime > 0) {
-                        Thread.sleep(waitTime);
+                        Thread.sleep(waitTime); /* 排队等待  */
                     }
                     return true;
                 } catch (InterruptedException e) {
