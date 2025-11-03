@@ -45,7 +45,7 @@ public abstract class LeapArray<T> {
     protected int intervalInMs;
     private double intervalInSecond;
 
-    protected final AtomicReferenceArray<WindowWrap<T>> array;
+    protected final AtomicReferenceArray<WindowWrap<T>> array; /* 滑动统计窗口 */
 
     /**
      * The conditional (predicate) update lock is used only when current bucket is deprecated.
@@ -68,7 +68,7 @@ public abstract class LeapArray<T> {
         this.intervalInSecond = intervalInMs / 1000.0;
         this.sampleCount = sampleCount;
 
-        this.array = new AtomicReferenceArray<>(sampleCount);
+        this.array = new AtomicReferenceArray<>(sampleCount);/* 滑动统计窗口 */
     }
 
     /**
@@ -77,7 +77,7 @@ public abstract class LeapArray<T> {
      * @return the bucket at current timestamp
      */
     public WindowWrap<T> currentWindow() {
-        return currentWindow(TimeUtil.currentTimeMillis());
+        return currentWindow(TimeUtil.currentTimeMillis()); /* 定位当前时间窗口 */
     }
 
     /**
@@ -97,14 +97,14 @@ public abstract class LeapArray<T> {
      */
     protected abstract WindowWrap<T> resetWindowTo(WindowWrap<T> windowWrap, long startTime);
 
-    private int calculateTimeIdx(/*@Valid*/ long timeMillis) {
-        long timeId = timeMillis / windowLengthInMs;
+    private int calculateTimeIdx(/**@Valid*/ long timeMillis) { /* 每过500ms切换窗口 */
+        long timeId = timeMillis / windowLengthInMs;//500ms
         // Calculate current index so we can map the timestamp to the leap array.
-        return (int)(timeId % array.length());
+        return (int)(timeId % array.length());//array.length() == 2
     }
 
-    protected long calculateWindowStart(/*@Valid*/ long timeMillis) {
-        return timeMillis - timeMillis % windowLengthInMs;
+    protected long calculateWindowStart(/**@Valid*/ long timeMillis) {
+        return timeMillis - timeMillis % windowLengthInMs;//500ms
     }
 
     /**
@@ -118,11 +118,11 @@ public abstract class LeapArray<T> {
             return null;
         }
 
-        int idx = calculateTimeIdx(timeMillis);
+        int idx = calculateTimeIdx(timeMillis); /* 窗口位置 */
         // Calculate current bucket start time.
-        long windowStart = calculateWindowStart(timeMillis);
+        long windowStart = calculateWindowStart(timeMillis);/* 窗口内开始时间 */
 
-        /*
+        /**
          * Get bucket item at given time from the array.
          *
          * (1) Bucket is absent, then just create a new bucket and CAS update to circular array.
@@ -132,7 +132,7 @@ public abstract class LeapArray<T> {
         while (true) {
             WindowWrap<T> old = array.get(idx);
             if (old == null) {
-                /*
+                /**
                  *     B0       B1      B2    NULL      B4
                  * ||_______|_______|_______|_______|_______||___
                  * 200     400     600     800     1000    1200  timestamp
@@ -153,7 +153,7 @@ public abstract class LeapArray<T> {
                     Thread.yield();
                 }
             } else if (windowStart == old.windowStart()) {
-                /*
+                /**
                  *     B0       B1      B2     B3      B4
                  * ||_______|_______|_______|_______|_______||___
                  * 200     400     600     800     1000    1200  timestamp
@@ -166,7 +166,7 @@ public abstract class LeapArray<T> {
                  */
                 return old;
             } else if (windowStart > old.windowStart()) {
-                /*
+                /**
                  *   (old)
                  *             B0       B1      B2    NULL      B4
                  * |_______||_______|_______|_______|_______|_______||___
