@@ -302,13 +302,13 @@ public final class SystemRuleManager {
         }
 
         // total qps
-        double currentQps = Constants.ENTRY_NODE.passQps();
+        double currentQps = Constants.ENTRY_NODE.passQps(); /* 当前cpu */
         if (currentQps + count > qps) {
             throw new SystemBlockException(resourceWrapper.getName(), "qps");
         }
 
         // total thread
-        int currentThread = Constants.ENTRY_NODE.curThreadNum();
+        int currentThread = Constants.ENTRY_NODE.curThreadNum(); /* 当前线程 */
         if (currentThread > maxThread) {
             throw new SystemBlockException(resourceWrapper.getName(), "thread");
         }
@@ -319,7 +319,7 @@ public final class SystemRuleManager {
         }
 
         // load. BBR algorithm.
-        if (highestSystemLoadIsSet && getCurrentSystemAvgLoad() > highestSystemLoad) {
+        if (highestSystemLoadIsSet && getCurrentSystemAvgLoad() > highestSystemLoad) { /* 当前系统负载 */
             if (!checkBbr(currentThread)) {
                 throw new SystemBlockException(resourceWrapper.getName(), "load");
             }
@@ -327,7 +327,7 @@ public final class SystemRuleManager {
 
         // cpu usage
         if (highestCpuUsageIsSet && getCurrentCpuUsage() > highestCpuUsage) {
-            throw new SystemBlockException(resourceWrapper.getName(), "cpu");
+            throw new SystemBlockException(resourceWrapper.getName(), "cpu"); /* 当前cpu */
         }
     }
 

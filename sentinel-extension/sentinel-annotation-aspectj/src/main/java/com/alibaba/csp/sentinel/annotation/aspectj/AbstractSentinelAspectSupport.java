@@ -127,18 +127,18 @@ public abstract class AbstractSentinelAspectSupport {
         throws Throwable {
 
         // Execute block handler if configured.
-        Method blockHandlerMethod = extractBlockHandlerMethod(pjp, annotation.blockHandler(),
+        Method blockHandlerMethod = extractBlockHandlerMethod(pjp, annotation.blockHandler(), /* 1、寻找 - 处理 - 拦截异常方法 */
             annotation.blockHandlerClass());
         if (blockHandlerMethod != null) {
             Object[] originArgs = pjp.getArgs();
             // Construct args.
             Object[] args = Arrays.copyOf(originArgs, originArgs.length + 1);
             args[args.length - 1] = ex;
-            return invoke(pjp, blockHandlerMethod, args);
+            return invoke(pjp, blockHandlerMethod, args);/* 2、调用 - 处理限流异常方法 */
         }
 
         // If no block handler is present, then go to fallback.
-        return handleFallback(pjp, annotation, ex);
+        return handleFallback(pjp, annotation, ex); /* 3、业务异常处理 - 兜底 */
     }
 
     private Object invoke(ProceedingJoinPoint pjp, Method method, Object[] args) throws Throwable {
@@ -256,16 +256,16 @@ public abstract class AbstractSentinelAspectSupport {
         boolean mustStatic = locationClass != null && locationClass.length >= 1;
         Class<?> clazz;
         if (mustStatic) {
-            clazz = locationClass[0];
+            clazz = locationClass[0]; /* 指定 - 限流异常 - 处理类 */
         } else {
             // By default current class.
-            clazz = pjp.getTarget().getClass();
+            clazz = pjp.getTarget().getClass();/* 否则寻找当前类 */
         }
         Method originMethod = resolveMethod(pjp);
         MethodWrapper m = ResourceMetadataRegistry.lookupBlockHandler(clazz, name, originMethod.getParameterTypes());
         if (m == null) {
             // First time, resolve the block handler.
-            Method method = resolveBlockHandlerInternal(originMethod, name, clazz, mustStatic);
+            Method method = resolveBlockHandlerInternal(originMethod, name, clazz, mustStatic); /* 寻找处理方法 */
             // Cache the method instance.
             ResourceMetadataRegistry.updateBlockHandlerFor(clazz, name, originMethod.getParameterTypes(), method);
             return method;
@@ -279,21 +279,21 @@ public abstract class AbstractSentinelAspectSupport {
     private Method resolveBlockHandlerInternal(Method originMethod, String name, Class<?> clazz, boolean mustStatic) {
         Class<?>[] originList = originMethod.getParameterTypes();
         Class<?>[] parameterTypes = Arrays.copyOf(originList, originList.length + 1);
-        parameterTypes[parameterTypes.length - 1] = BlockException.class;
+        parameterTypes[parameterTypes.length - 1] = BlockException.class; /* 最后一个参数必须是 BlockException */
         return findMethod(mustStatic, clazz, name, originMethod.getReturnType(), parameterTypes);
     }
 
     private boolean checkStatic(boolean mustStatic, Method method) {
         return !mustStatic || isStatic(method);
     }
-
+    /* clazz = 查找类， name=找出方法名，  returnType=方法返回类型  */
     private Method findMethod(boolean mustStatic, Class<?> clazz, String name, Class<?> returnType,
                               Class<?>... parameterTypes) {
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             if (name.equals(method.getName()) && checkStatic(mustStatic, method)
                 && returnType.isAssignableFrom(method.getReturnType())
-                && Arrays.equals(parameterTypes, method.getParameterTypes())) {
+                && Arrays.equals(parameterTypes, method.getParameterTypes())) {/* 方法参数与返回类型都必须一样 */
 
                 RecordLog.info("Resolved method [{}] in class [{}]", name, clazz.getCanonicalName());
                 return method;

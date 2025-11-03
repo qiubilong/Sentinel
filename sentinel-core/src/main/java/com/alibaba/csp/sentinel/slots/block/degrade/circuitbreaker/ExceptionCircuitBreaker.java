@@ -70,11 +70,11 @@ public class ExceptionCircuitBreaker extends AbstractCircuitBreaker {
         Throwable error = entry.getError();
         SimpleErrorCounter counter = stat.currentWindow().value();
         if (error != null) {
-            counter.getErrorCount().add(1);
+            counter.getErrorCount().add(1);/* 异常 +1 */
         }
         counter.getTotalCount().add(1);
 
-        handleStateChangeWhenThresholdExceeded(error); /* ## 尝试恢复通路 */
+        handleStateChangeWhenThresholdExceeded(error); /* ##  断路 、 尝试恢复通路 */
     }
 
     private void handleStateChangeWhenThresholdExceeded(Throwable error) {
@@ -107,7 +107,7 @@ public class ExceptionCircuitBreaker extends AbstractCircuitBreaker {
             // Use errorRatio
             curCount = errCount * 1.0d / totalCount;
         }
-        if (curCount > threshold) {
+        if (curCount > threshold) {/* 超过阈值，断开通路 */
             transformToOpen(curCount);
         }
     }

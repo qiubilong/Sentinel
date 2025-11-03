@@ -49,7 +49,7 @@ public class FlowRuleChecker {
         Collection<FlowRule> rules = ruleProvider.apply(resource.getName());
         if (rules != null) {
             for (FlowRule rule : rules) {
-                if (!canPassCheck(rule, context, node, count, prioritized)) {
+                if (!canPassCheck(rule, context, node, count, prioritized)) { /* 流控规则 */
                     throw new FlowException(rule.getLimitApp(), rule);
                 }
             }
@@ -82,7 +82,7 @@ public class FlowRuleChecker {
             return true;
         }
 
-        return rule.getRater().canPass(selectedNode, acquireCount, prioritized);
+        return rule.getRater().canPass(selectedNode, acquireCount, prioritized);/* 流控规则 - 快速失败、预热、排队等等 */
     }
 
     static Node selectReferenceNode(FlowRule rule, Context context, DefaultNode node) {

@@ -56,7 +56,7 @@ public class SentinelResourceAspect extends AbstractSentinelAspectSupport {  /* 
             entry = SphU.entry(resourceName, resourceType, entryType, pjp.getArgs());/* 限流降级入口 */
             return pjp.proceed();
         } catch (BlockException ex) {
-            return handleBlockException(pjp, annotation, ex);
+            return handleBlockException(pjp, annotation, ex);/* 拦截异常 - 处理方法参数与返回类型都必须一样  */
         } catch (Throwable ex) {
             Class<? extends Throwable>[] exceptionsToIgnore = annotation.exceptionsToIgnore();
             // The ignore list will be checked first.
@@ -65,7 +65,7 @@ public class SentinelResourceAspect extends AbstractSentinelAspectSupport {  /* 
             }
             if (exceptionBelongsTo(ex, annotation.exceptionsToTrace())) {
                 traceException(ex);
-                return handleFallback(pjp, annotation, ex);
+                return handleFallback(pjp, annotation, ex);/* 业务异常 */
             }
 
             // No fallback function can handle the exception, so throw it out.

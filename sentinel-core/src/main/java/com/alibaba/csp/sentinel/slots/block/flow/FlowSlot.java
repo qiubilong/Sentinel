@@ -159,7 +159,7 @@ public class FlowSlot extends AbstractLinkedProcessorSlot<DefaultNode> {
     @Override
     public void entry(Context context, ResourceWrapper resourceWrapper, DefaultNode node, int count,
                       boolean prioritized, Object... args) throws Throwable {
-        checkFlow(resourceWrapper, context, node, count, prioritized);
+        checkFlow(resourceWrapper, context, node, count, prioritized); /* 流控规则 */
 
         fireEntry(context, resourceWrapper, node, count, prioritized, args);
     }

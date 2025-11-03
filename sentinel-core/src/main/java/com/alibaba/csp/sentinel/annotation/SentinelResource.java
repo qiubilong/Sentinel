@@ -50,7 +50,7 @@ public @interface SentinelResource {
     /**
      * @return name of the block exception function, empty by default
      */
-    String blockHandler() default "";
+    String blockHandler() default ""; /* 拦截异常 - 处理器 */
 
     /**
      * The {@code blockHandler} is located in the same class with the original method by default.
@@ -75,7 +75,7 @@ public @interface SentinelResource {
      * @return name of the default fallback method, empty by default
      * @since 1.6.0
      */
-    String defaultFallback() default "";
+    String defaultFallback() default ""; /* 业务异常 - 处理器  */
 
     /**
      * The {@code fallback} is located in the same class with the original method by default.
