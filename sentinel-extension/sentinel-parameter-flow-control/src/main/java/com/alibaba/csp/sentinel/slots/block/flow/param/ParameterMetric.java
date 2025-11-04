@@ -52,7 +52,7 @@ public class ParameterMetric {
      * Format: (rule, (value, tokenCounter))
      *
      * @since 1.6.0
-     */
+     */    /* lru 容器--  ruleTimeCounters.put(rule, new ConcurrentLinkedHashMapWrapper<Object, AtomicLong>(size)); */
     private final Map<ParamFlowRule, CacheMap<Object, AtomicReference<TokenUpdateStatus>>> ruleTokenCounter = new HashMap<>();
 
     private final Map<Integer, CacheMap<Object, AtomicInteger>> threadCountMap = new HashMap<>();

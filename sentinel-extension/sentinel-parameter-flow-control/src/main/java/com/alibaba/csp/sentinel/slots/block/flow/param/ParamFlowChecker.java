@@ -134,7 +134,7 @@ public final class ParamFlowChecker {
         // Calculate max token count (threshold)
         Set<Object> exclusionItems = rule.getParsedHotItems().keySet();
         long tokenCount = (long) rule.getCount();
-        if (exclusionItems.contains(value)) {
+        if (exclusionItems.contains(value)) {/* 特殊参数 配置 */
             tokenCount = rule.getParsedHotItems().get(value);
         }
 
